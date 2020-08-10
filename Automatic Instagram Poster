@@ -1,0 +1,52 @@
+from PIL import Image
+import time, random, os
+import schedule
+import shutil
+from instabot import Bot
+
+os.chdir("/home/ubuntu/London Green Spaces InstaBot/Posts")
+
+class insta_saver:
+    def __init__(self):
+        self.path = r"/home/ubuntu/London Green Spaces InstaBot/Vectors"
+        self.file_name = random.choice([x for x in os.listdir(self.path) if not x.startswith(".")])
+        self.fullpath = path + "/" + self.file_name
+        self.img = Image.open(self.fullpath)
+        self.img.save(self.file_name + "post.png")
+
+        self.destination = "/home/ubuntu/London Green Spaces InstaBot/Bin"
+        shutil.move(self.fullpath, self.destination)
+
+        time.sleep(2)
+
+        os.remove(self.destination + '/' + self.file_name)
+
+        self.title_caption = self.file_name.replace("-", " ")\
+                        .replace("(ii)", "")\
+                        .replace("(iii)", "")\
+                        .replace("(iiii)", "")\
+                        .replace("(iiiii)", "")\
+                        .replace("(iiiiii)", "")\
+                        .replace(".jpg", "")\
+                        .replace(".jpeg", "")
+        
+        self.my_hashtags = ""
+
+        self.caption_final = self.title_caption + "\n.\n.\n.\n.\n.\n" + self.my_hashtags
+
+        self.bot = Bot()
+        self.bot.login(username="", password="") 
+        
+        for _images_ in os.walk("/home/ubuntu/London Green Spaces InstaBot/Posts/"):
+            self.bot.upload_photo(_images_ + self.file_name + "post.png", caption=self.caption_final)
+
+        print(self.caption_final + " ————> Posted!")
+
+
+if __name__ == "__main__":
+    stater = insta_saver()
+    schedule.every().day.at("08:00").do(stater)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
